@@ -1,3 +1,15 @@
+/*
+ * Algorithmie et Structure de données
+ * 
+ * Auteurs : Corazza Erick, Saez Sébastien et Cristi Kevin
+ * Date : 09.04.2017
+ * Source : labo3.cpp
+ * 
+ * Ce programme a pour but de tester empiriquement 3 différents tris:
+ * - le selection sort
+ * - le quick sort
+ * - le tri par comptage (counting sort)
+ */
 #include <iostream>
 #include <vector>
 #include <string>
