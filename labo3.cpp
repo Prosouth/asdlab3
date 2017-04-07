@@ -86,10 +86,10 @@ void quickSort(RandomAccessIterator begin,
 //########################MAIN############################
 int main()
 {
-    const int BORNE_INFERIEURE = 1;
     const int BORNE_SUPERIEURE = 100;
     const int NB_SIMULATION = 40;
     const int LARGEUR_COLONNE = 20;
+    const unsigned int MAX_EXPOSANT = 6;
     const string TAILLE = "Taille";
     const string TEMPS_SEL = "Temps selection";
     const string TEMPS_QUICK = "Temps quick";
@@ -102,7 +102,7 @@ int main()
         << endl;
 
    // Tableaux de 1 à 10⁶
-   for (unsigned int exp = 1; exp < 6; exp++) 
+   for (unsigned int exp = 1; exp <= MAX_EXPOSANT; exp++) 
    {
       const unsigned int NB_ELEM = pow(10, exp); // taille basée sur la boucle
       /* srand() only permits a limited range of seeds. Engines in <random> can 
