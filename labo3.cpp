@@ -1,5 +1,5 @@
 /*
- * Algorithmie et Structure de données
+ * Algorithmes et Structures de données
  * 
  * Auteurs : Corazza Erick, Saez Sébastien et Cristi Kevin
  * Date : 09.04.2017
