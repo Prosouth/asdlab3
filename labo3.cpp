@@ -1,14 +1,14 @@
 #include <iostream>
-#include <utility>
-#include <climits>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <chrono>
+#include <cmath>
+#include <iomanip>
 using namespace std;
+using namespace std::chrono;
 
 //##############COUNTING SORT##########################
-
 // countingSort
 //
 // Effectue le tri comptage des éléments entre begin
@@ -23,14 +23,6 @@ using namespace std;
 template <typename RandomAccessIterator>
 void countingSort(RandomAccessIterator begin,
                   RandomAccessIterator end);
-
-// display counting sort
-//
-// Affiche les valeur entre begin et end (non inclus)
-// utilisé uniquement par main, pas par vous.
-template <typename RandomAccessIterator>
-void display(const RandomAccessIterator begin,
-             const RandomAccessIterator end);
 
 
 //#####################################################
@@ -48,18 +40,6 @@ void ourSwap(T& elem1, T& elem2);
 template < typename RandomAccessIterator >
 void selectionSort( RandomAccessIterator begin,
                    RandomAccessIterator end);
-
-// display
-//
-// Affiche les valeur entre begin et end (non inclus)
-// en entourant de [] les valeurs pointées par it1 et
-// it2 (it1<=it2) pour souligner les valeurs échangées
-// par le tri par sélection
-template <typename RandomAccessIterator>
-void display(const RandomAccessIterator begin,
-             const RandomAccessIterator it1,
-             const RandomAccessIterator it2,
-             const RandomAccessIterator end);
 
 //########################################################
 
@@ -87,26 +67,89 @@ RandomAccessIterator selectPivot(const RandomAccessIterator begin,
 template <typename RandomAccessIterator>
 void quickSort(RandomAccessIterator begin,
                RandomAccessIterator end);
-
-// display
-//
-// Affiche les valeur entre begin et end (non inclus)
-// en entourant de [] la valeur du pivot située entre
-// begin et end.
-template <typename RandomAccessIterator>
-void display(const RandomAccessIterator begin,
-             const RandomAccessIterator pivot,
-             const RandomAccessIterator end);
-
-
 //########################################################
+
+
 
 //########################MAIN############################
 int main()
 {
-   
+    const int BORNE_INFERIEURE = 1;
+    const int BORNE_SUPERIEURE = 100;
+    const int NB_SIMULATION = 40;
+    const int LARGEUR_COLONNE = 20;
+    const string TAILLE = "Taille";
+    const string TEMPS_SEL = "Temps selection";
+    const string TEMPS_QUICK = "Temps quick";
+    const string TEMPS_COUNT = "Temps comptage";
+    
+   cout << "#######################################################################"
+           "################" << endl; 
+   cout << setw(LARGEUR_COLONNE) << TAILLE << setw(LARGEUR_COLONNE) << TEMPS_SEL 
+        << setw(LARGEUR_COLONNE) << TEMPS_QUICK << setw(LARGEUR_COLONNE) <<TEMPS_COUNT 
+        << endl;
 
-    return EXIT_SUCCESS;
+   // Tableaux de 1 à 10⁶
+   for (unsigned int exp = 1; exp < 6; exp++) 
+   {
+      const unsigned int NB_ELEM = pow(10, exp); // taille basée sur la boucle
+      /* srand() only permits a limited range of seeds. Engines in <random> can 
+       * be initialized using seed sequences which permit the maximum possible 
+       * seed data. seed_seq also implements a common pRNG warm-up.
+       
+       * On voulait faire avec la librairie random mais on était pas sûr de l'utiliser
+       * correctement*/
+      srand(exp);
+      chrono::high_resolution_clock::time_point t1;
+      chrono::high_resolution_clock::time_point t2;
+
+      // On initialise les moyennes à 0
+      double averageTimeS = 0, averageTimeQ = 0, averageTimeC = 0;
+      for (unsigned int i = 0; i < NB_SIMULATION; i++) 
+      {
+         //définition de la taille des vecteurs
+         vector<int> vectSelect(exp);
+         vector<int> vectQuick(exp);
+         vector<int> vectCount(exp);
+
+         // On remplit les vecteurs
+         for (size_t j = 0; j < NB_ELEM; j++) 
+         {
+            int item = rand() % BORNE_SUPERIEURE + 1; // de manière aléatoire
+            vectSelect.push_back(item); // vecteur pour selection sort
+            vectQuick.push_back(item); // vecteur pour quick sort
+            vectCount.push_back(item); // vecteur pour counting sort
+         }
+
+         // Tris
+         // selectionSort         
+         t1 = chrono::high_resolution_clock::now();
+         selectionSort(vectSelect.begin(), vectSelect.end());
+         t2 = chrono::high_resolution_clock::now();
+         averageTimeS += chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
+
+         // Rapide
+         t1 = chrono::high_resolution_clock::now();
+         quickSort(vectQuick.begin(), vectQuick.end());
+         t2 = chrono::high_resolution_clock::now();
+         averageTimeQ += chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
+
+         // Test pour le counting sort en gardant le temps pour le calcul de la moyenne
+         t1 = chrono::high_resolution_clock::now();
+         countingSort(vectCount.begin(), vectCount.end());
+         t2 = chrono::high_resolution_clock::now();
+         averageTimeC += chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
+      }
+      // Affichage des résultats de manière soyeuse
+      cout << setw(LARGEUR_COLONNE)<< NB_ELEM << setw(LARGEUR_COLONNE) 
+           << averageTimeS / NB_SIMULATION << setw(LARGEUR_COLONNE) 
+           << averageTimeQ / NB_SIMULATION << setw(LARGEUR_COLONNE) 
+           << averageTimeC / NB_SIMULATION << endl;
+      
+      cout << "#######################################################################"
+              "################" << endl; 
+   }
+   return EXIT_SUCCESS;
 }
 
 //########################################################
@@ -138,10 +181,6 @@ void countingSort(RandomAccessIterator begin,
         {
             *(begin + x++) = i + min;
         }
-        if(tabComptage.at(i) > 0)
-        {
-            cout << *(begin + x - 1) << ": " << tabComptage.at(i) << endl;
-        }
     }
 }
 
@@ -172,7 +211,6 @@ void selectionSort(RandomAccessIterator begin,
             ++j;
         }
         ourSwap(*i, *iMin);
-        display(begin, i, iMin, end);
     }
 }
 
@@ -189,7 +227,9 @@ RandomAccessIterator selectPivot(const RandomAccessIterator begin,
         if( *p2 < *p3 ) return p2;
         else if(*p1 < *p3) return p3;
         return p1;
-    } else {
+    } 
+    else 
+    {
         if( *p1 < *p3 ) return p1;
         else if(*p2 < *p3) return p3;
         return p2;
@@ -201,7 +241,6 @@ template <typename RandomAccessIterator>
 void quickSort(RandomAccessIterator begin,
         RandomAccessIterator end)
 {
-
     RandomAccessIterator i;
     RandomAccessIterator j;
     RandomAccessIterator hi = end - 1;
@@ -237,52 +276,6 @@ void quickSort(RandomAccessIterator begin,
     }
 
     swap(*i, *hi); // on échange i et la valeur tout à droite
-
-    if (begin != end - 1) 
-    {
-        display(begin, i, end); // on fait l'affichage
-    }
-
     quickSort(begin, i);
     quickSort(i + 1, end);
-}
-
-
-
-
-// Display de counting sort
-template <typename RandomAccessIterator>
-void display(const RandomAccessIterator begin,
-             const RandomAccessIterator end)
-{
-    for(auto it = begin; it<end; ++it) cout << *it << " ";
-    cout << endl;
-}
-
-// Display de selection sort
-template < typename RandomAccessIterator >
-void display(const RandomAccessIterator begin,
-             const RandomAccessIterator it1,
-             const RandomAccessIterator it2,
-             const RandomAccessIterator end)
-{
-    for(auto it = begin; it<it1; ++it) cout << " " << *it << " ";
-    if(it1<end) cout << "[" << *it1 << "]";
-    for(auto it = it1+1; it<it2; ++it) cout << " " << *it << " ";
-    if(it2<end && it1!=it2) cout << "[" << *it2 << "]";
-    for(auto it = it2+1; it<end; ++it) cout << " " << *it << " ";
-    cout << endl;
-}
-
-
-// Display de quick sort
-template <typename RandomAccessIterator>
-void display(const RandomAccessIterator begin,
-             const RandomAccessIterator pivot,
-             const RandomAccessIterator end)
-{
-    for(auto it = begin; it<pivot; ++it) cout << *it << " ";
-    cout << "[" << *pivot << "] ";
-    for(auto it = pivot+1; it<end; ++it) cout << *it << " ";
-    cout << endl;
 }
