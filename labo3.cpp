@@ -40,9 +40,6 @@ void countingSort(RandomAccessIterator begin,
 //#####################################################
 
 //################SELECTION SORT#######################
-// Simple fonction swap générique
-template <typename T>
-void ourSwap(T& elem1, T& elem2);
 
 // selectionSort
 //
@@ -196,16 +193,6 @@ void countingSort(RandomAccessIterator begin,
     }
 }
 
-
-template <typename T>
-void ourSwap(T& elem1, T& elem2)
-{
-    T temp = elem1;
-    elem1 = elem2;
-    elem2 = temp;
-}
-
-
 template <typename RandomAccessIterator>
 void selectionSort(RandomAccessIterator begin,
                    RandomAccessIterator end)
@@ -222,7 +209,7 @@ void selectionSort(RandomAccessIterator begin,
             }
             ++j;
         }
-        ourSwap(*i, *iMin);
+        swap(*i, *iMin);
     }
 }
 
