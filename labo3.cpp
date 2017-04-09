@@ -84,7 +84,7 @@ void quickSort(RandomAccessIterator begin,
 int main()
 {
     const int BORNE_SUPERIEURE = 100;
-    const int NB_SIMULATION = 40;
+    const int NB_SIMULATION = 30;
     const int LARGEUR_COLONNE = 20;
     const unsigned int MAX_EXPOSANT = 6;
     const string TAILLE = "Taille";
@@ -265,7 +265,7 @@ void quickSort(RandomAccessIterator begin,
         do 
         {
             --j;
-        } while (j > begin and *j > *hi); // éléments à droite du pivot > à val de j
+        } while (j > begin && *j > *hi); // éléments à droite du pivot > à val de j
 
         if (i >= j) // nécessaire pour ne pas effectuer le dernier swap
         {
